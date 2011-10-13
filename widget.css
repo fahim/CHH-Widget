@@ -1,0 +1,85 @@
+#chh-widget {
+  width: 280px;
+  height: 165px;
+  background: #d6e5fa;
+  font: 13px helvetica, arial;
+}
+  .player {
+     margin: 10px;  
+     padding-top: 10px;
+     overflow: hidden;
+     width: 100%;
+     margin-bottom: 0;
+  }
+    .player .button {
+      background: #fff no-repeat center;
+      width: 10px;
+      height: 15px;
+      border: 1px solid #f24400;
+      padding: 4px;
+      float: left;
+    }
+      .player .play {
+        background-image: url(play.png);
+      }
+      .player .pause {
+        background-image: url(pause.png);
+      }
+    .player .progress {
+      background: #fff;
+      width: 228px;
+      height: 15px;
+      border: 1px solid #aaa;
+      border-left: none;
+      float: left;
+      padding: 4px;
+      position: relative;
+      z-index: 10;
+    }
+      .player .progress .playlist-name {
+        color: #f24400;
+        font: bold 12px helvetica, arial;
+        padding-top: 1px;
+        overflow: hidden;
+        z-index: 100;
+        position: absolute;
+      }
+      .player .progress #chh-widget-progress-bar {
+        height: 23px;
+        background: #fdede6;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+      }
+  .playlist {
+    height: 100px;
+    overflow-y: scroll;
+  }
+    .songs {
+      list-style-type: none;
+      margin: 0 10px 0 10px;
+      padding: 0;
+      width: 257px;
+      background: #fff;
+    }
+      .songs li {
+        font: 12px helvetica, arial;
+        padding: 4px;
+        margin: 0;
+        cursor: pointer;
+      }
+        .songs li.selected {
+          background: #ddd;
+        }
+  .logo {
+    float: right;
+    margin-right: 13px;
+    margin-top: 7px;
+    width: 125px;
+  }
+  .meta {
+    margin: 8px 0 0 12px;
+    color: gray;
+    float: left;
+  }
