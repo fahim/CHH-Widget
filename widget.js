@@ -6,6 +6,7 @@ var ChhWidget = {
 
   playImage:    'play.png',
   pauseImage:   'pause.png',
+  loaderImage:  'loader.gif',
   buttonId:     'chh-widget-button',
   progressId:   'chh-widget-progress-bar',
   progressTime: '',
@@ -39,8 +40,9 @@ var ChhWidget = {
   
   drawPlayer: function(element) {
     $(element).append('<div class="button play" id="'+ this.buttonId +'"></div>\
-                         <div class="progress">\
+                       <div class="progress">\
                          <div class="playlist-name">'+ this.playlistName +'</div>\
+                         <div id="chh-widget-time-left"></div>\
                          <div id="'+ this.progressId +'"></div>\
                        </div>')
     $('.button', element).click(this.pauseSong)
@@ -80,19 +82,15 @@ var ChhWidget = {
     }
     
     audio = document.createElement('audio')
-    audio.src = "http://cdn.currenthiphop.com/stream/" + song.id + ".mp3"
-    audio.addEventListener('timeupdate', function() {
-      self = ChhWidget
-      self.progressBarUpdate(audio)
-    }, false)
-
     self.activeAudio = audio
+    audio.src = "http://cdn.currenthiphop.com/stream/" + song.id + ".mp3"
   },
   
   startSong: function() {
     self = ChhWidget
     song = $(this).data('song')
     
+    self.showBuffer()
     self.setupSong(song)
     self.playSong()
     
@@ -102,42 +100,74 @@ var ChhWidget = {
   
   playSong: function() {
     self = ChhWidget
+    
     if (self.activeAudio != null) {
       self.activeAudio.play()
-      log(self.activeSong)
-      $(this).click(this.pauseSong)
-      $('#' + self.buttonId).css('background-image', 'url(' + self.pauseImage + ')')
+      $(self).click(self.pauseSong)
+      //button = $('#' + self.buttonId).removeClass('play', 'buffer').addClass('pause')
     }
+    
+    self.progressInterval = window.setInterval(this.updateProgress, 30)
   },
   
   pauseSong: function() {
     self = ChhWidget
+    
     if (self.activeAudio != null) {
       self.activeAudio.pause()
-      $(this).click(this.playSong)
-      $('#' + self.buttonId).css('background-image', 'url(' + self.playImage + ')')
+      window.clearInterval(self.progressInterval);
+      
+      $(self).click(self.playSong)
+      button = $('#' + self.buttonId).removeClass('pause', 'buffer').addClass('play')
     }
   },
   
-  progressBarUpdate: function(audio) {
-    var duration = audio.duration;
-    var current = audio.currentTime;
-    var progress = (current / duration) * 100;
+  updateProgress: function() {
+    self = ChhWidget
+    audio = self.activeAudio
     
-     // Change the width of the progress bar
-     width = (progress * 2)
-     $('#' + this.progressId).css('width', width + '%');
+    var loaded;
+    if ((audio.buffered != undefined) && (audio.buffered.length != 0)) {
+      loaded = parseInt((audio.currentTime - audio.buffered.end(0)), 10);
+      log(loaded)
+      self.progressBarUpdate()
+    } else {
+      loaded = 0
+    }
+    
+    if (loaded > 0) {
+      self.showBuffer()
+    } else if (audio.currentTime > 0) {
+      $('#' + self.buttonId).removeClass('buffer')
+      $('#' + self.buttonId).addClass('pause')
+    }
 
-     // And finally calculate where we are in the 
-     var tcMins = parseInt(duration/60);
-     var tcSecs = parseInt(duration - (tcMins * 60));
+  },
+  
+  showBuffer: function() {
+    self = ChhWidget
+    $('#' + self.buttonId).removeClass('play', 'pause').addClass('buffer')
+  },
+  
+  progressBarUpdate: function(audio) {
+    self = ChhWidget
+    audio = self.activeAudio
+    
+    var remaining = parseInt(audio.duration - audio.currentTime, 10),
+    progress      = (audio.currentTime / audio.duration) * 100,
+    minutes       = Math.floor(remaining / 60,10),
+    seconds       = remaining - minutes *60;
 
-     // If the number of seconds is less than 10, add a '0'
-     if (tcSecs < 10) { tcSecs = '0' + tcSecs; }
-
-     // Display the time
-     $('#' + this.progressTime).html(tcMins + ':' + tcSecs);
-  }
+    $('#chh-widget-time-left').html('-' + minutes + ':' + (seconds > 9 ? seconds : '0' + seconds));
+    if (!self.audioLoaded) {
+      self.audioLoaded = true;
+    }
+    
+    // Change the width of the progress bar
+    width = (progress * 2)
+    $('#' + this.progressId).css('width', width + '%');
+    //if (!manualSeek) { positionIndicator.css({left: pos + '%'}); }
+  },
 }
 
 ChhWidget.playlistName = "Birthday Philosophy Mixtape"

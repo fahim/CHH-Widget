@@ -15,7 +15,7 @@
       background: #fff no-repeat center;
       width: 10px;
       height: 15px;
-      border: 1px solid #f24400;
+      border: 1px solid #eb8518;
       padding: 4px;
       float: left;
     }
@@ -24,6 +24,10 @@
       }
       .player .pause {
         background-image: url(pause.png);
+      }
+      .player .buffer {
+        background-color: #eb8518;
+        background-image: url(loader.gif);
       }
     .player .progress {
       background: #fff;
@@ -51,6 +55,12 @@
         top: 0;
         left: 0;
         z-index: 1;
+      }
+      #chh-widget-time-left {
+        float: right;
+        color: gray;
+        margin: 2px 2px 0 0;
+        font-size: 12px;
       }
   .playlist {
     height: 100px;
